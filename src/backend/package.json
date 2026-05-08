@@ -26,8 +26,8 @@
     "@fastify/swagger-ui": "^5.1.0",
     "@notula/shared": "*",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.36.4",
-    "drizzle-zod": "^0.5.1",
+    "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.8.3",
     "fastify": "^5.1.0",
     "fastify-type-provider-zod": "^4.0.2",
     "pino": "^9.5.0",
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
-    "drizzle-kit": "^0.28.1",
+    "drizzle-kit": "^0.31.10",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "vitest": "^2.1.6"
