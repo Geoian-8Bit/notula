@@ -12,7 +12,7 @@ export function RequireAuth({ children }: Props) {
 
   if (isPending) {
     return (
-      <div className="text-parchment-muted flex h-dvh w-dvw items-center justify-center">
+      <div className="bg-page text-text-soft flex h-dvh w-dvw items-center justify-center">
         <span className="font-display animate-pulse text-xl">Abriendo la biblioteca…</span>
       </div>
     );
