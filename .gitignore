@@ -33,6 +33,10 @@ drizzle/migrations/meta/_journal.json.backup
 uploads/
 storage/
 *.local
+*.pgdata/
+local.pgdata
+
+scripts/init-postgres.sql
 
 *.pem
 *.key

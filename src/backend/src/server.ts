@@ -8,6 +8,7 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod';
 import { env } from './config/env.js';
+import { migrateDb } from './db/index.js';
 import { registerCors } from './plugins/cors.js';
 import { registerSwagger } from './plugins/swagger.js';
 import { registerRateLimit } from './plugins/rate-limit.js';
@@ -73,6 +74,9 @@ export async function buildApp() {
 }
 
 async function main() {
+  if (env.NODE_ENV !== 'production') {
+    await migrateDb();
+  }
   const app = await buildApp();
   try {
     await app.listen({ host: env.BACKEND_HOST, port: env.BACKEND_PORT });
