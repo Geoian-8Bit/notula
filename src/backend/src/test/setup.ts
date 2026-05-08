@@ -9,6 +9,11 @@ if (!process.env.BETTER_AUTH_SECRET) {
 if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = 'test';
 }
+// Tests run against DATABASE_URL_TEST when set so they cannot pollute the dev DB.
+// In CI the Postgres service is ephemeral, so DATABASE_URL is fine on its own.
+if (process.env.DATABASE_URL_TEST) {
+  process.env.DATABASE_URL = process.env.DATABASE_URL_TEST;
+}
 if (!process.env.DATABASE_URL) {
   process.env.DATABASE_URL = 'postgres://notula:notula@localhost:5432/notula';
 }

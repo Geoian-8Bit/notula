@@ -156,7 +156,7 @@ Reinicia `npm run dev` para que coja el cambio (el `.env` se lee al boot, no en 
 
 ## Correr tests en local
 
-Backend tests requieren Postgres alcanzable por `DATABASE_URL`. Si tienes Postgres dev arrancado (cualquiera de las opciones de arriba), corre:
+Backend tests requieren Postgres alcanzable. Por defecto usan `DATABASE_URL_TEST` si está definido en `.env`; si no, caen en `DATABASE_URL`. El `init-postgres.ps1` ya crea la DB `notula_test` para el rol `notula`, así que basta con:
 
 ```bash
 npm test
@@ -171,7 +171,9 @@ npm test --workspace=@notula/backend
 npm test --workspace=@notula/frontend
 ```
 
-> **Aviso:** los tests usan **el mismo `DATABASE_URL` que el dev server** (lee `.env`). Crearán users de prueba (`test+<timestamp>@notula.test`) que se acumulan en la tabla `users`. Para mantenerlos limpios, resetea la DB cuando quieras (ver arriba). Mejora pendiente: separar test DB.
+> Los tests crean users de prueba (`test+<timestamp>@notula.test`) que se acumulan. Como van a `notula_test` y no a `notula`, no contaminan el dev DB. Si en algún momento quieres limpiar el test DB, igual que el dev: `DROP SCHEMA public CASCADE; ...` apuntando a `notula_test`.
+
+> En CI no hay DB de tests separada — el servicio Postgres es efímero (se descarta al terminar el job), así que reutiliza la misma DB. Por eso el workflow no setea `DATABASE_URL_TEST`.
 
 ## Detener todo
 
