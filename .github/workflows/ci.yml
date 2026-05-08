@@ -9,6 +9,24 @@ on:
 jobs:
   lint-typecheck-build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: notula
+          POSTGRES_PASSWORD: notula
+          POSTGRES_DB: notula
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U notula -d notula"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://notula:notula@localhost:5432/notula
+      BETTER_AUTH_SECRET: ci-test-secret-must-be-at-least-32-characters
+      NODE_ENV: test
     steps:
       - uses: actions/checkout@v4
 

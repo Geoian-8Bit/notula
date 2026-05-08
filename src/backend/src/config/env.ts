@@ -11,6 +11,8 @@ const envSchema = z.object({
   BACKEND_LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
   DATABASE_URL: z.string().url(),
   CORS_ORIGINS: z.string().default('http://localhost:5173'),
+  BETTER_AUTH_SECRET: z.string().min(32, 'BETTER_AUTH_SECRET must be at least 32 characters'),
+  BETTER_AUTH_URL: z.string().url().default('http://localhost:4000'),
   GOOGLE_BOOKS_API_KEY: z.string().optional(),
   HARDCOVER_API_TOKEN: z.string().optional(),
   R2_ACCOUNT_ID: z.string().optional(),

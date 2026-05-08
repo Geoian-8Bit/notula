@@ -11,6 +11,8 @@ import { env } from './config/env.js';
 import { registerCors } from './plugins/cors.js';
 import { registerSwagger } from './plugins/swagger.js';
 import { registerRateLimit } from './plugins/rate-limit.js';
+import { registerAuth } from './plugins/auth.js';
+import { requireUser } from './auth/require-user.js';
 import { healthRoutes } from './routes/health.js';
 import { bookRoutes } from './routes/books.js';
 import { AppError } from './lib/errors.js';
@@ -39,7 +41,14 @@ export async function buildApp() {
   await registerSwagger(app);
 
   await app.register(healthRoutes);
-  await app.register(bookRoutes, { prefix: '/api/v1' });
+  await registerAuth(app);
+  await app.register(
+    async (protectedScope) => {
+      protectedScope.addHook('preHandler', requireUser);
+      await protectedScope.register(bookRoutes);
+    },
+    { prefix: '/api/v1' },
+  );
 
   app.setErrorHandler((error, req, reply) => {
     req.log.error({ err: error }, 'request failed');
