@@ -35,22 +35,6 @@ export async function buildApp() {
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
-  await app.register(helmet, { contentSecurityPolicy: env.NODE_ENV === 'production' });
-  await app.register(sensible);
-  await registerRateLimit(app);
-  await registerCors(app);
-  await registerSwagger(app);
-
-  await app.register(healthRoutes);
-  await registerAuth(app);
-  await app.register(
-    async (protectedScope) => {
-      protectedScope.addHook('preHandler', requireUser);
-      await protectedScope.register(bookRoutes);
-    },
-    { prefix: '/api/v1' },
-  );
-
   app.setErrorHandler((error, req, reply) => {
     req.log.error({ err: error }, 'request failed');
     if (error instanceof AppError) {
@@ -69,6 +53,22 @@ export async function buildApp() {
       requestId: req.id,
     });
   });
+
+  await app.register(helmet, { contentSecurityPolicy: env.NODE_ENV === 'production' });
+  await app.register(sensible);
+  await registerRateLimit(app);
+  await registerCors(app);
+  await registerSwagger(app);
+
+  await app.register(healthRoutes);
+  await registerAuth(app);
+  await app.register(
+    async (protectedScope) => {
+      protectedScope.addHook('preHandler', requireUser);
+      await protectedScope.register(bookRoutes);
+    },
+    { prefix: '/api/v1' },
+  );
 
   return app;
 }

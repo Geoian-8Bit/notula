@@ -1,3 +1,8 @@
+import { config } from 'dotenv';
+import path from 'node:path';
+
+config({ path: path.resolve(process.cwd(), '../../.env') });
+
 if (!process.env.BETTER_AUTH_SECRET) {
   process.env.BETTER_AUTH_SECRET = 'test-secret-must-be-at-least-32-characters-long';
 }
