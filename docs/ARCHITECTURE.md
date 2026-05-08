@@ -28,7 +28,7 @@ Documento de referencia. Lee `CLAUDE.md` primero para tener el contexto y las re
 notula/
 ├── CLAUDE.md                          guía corta para agentes (auto-loaded por Claude Code)
 ├── README.md                          presentación + quickstart
-├── docs/                              docs detallados (este archivo, CONVENTIONS, SETUP, ROADMAP)
+├── docs/                              docs detallados (este archivo, CONVENTIONS, SETUP)
 ├── package.json                       workspaces npm (shared, src/backend, src/frontend)
 ├── .env.example                       plantilla; .env real está en .gitignore
 ├── .gitignore .gitleaks.toml .editorconfig .nvmrc
@@ -300,4 +300,3 @@ Si en runtime el backend devuelve algo que no encaja con la zod, `parse` lanza y
 
 - **`docs/CONVENTIONS.md`** — recetas concretas para añadir features.
 - **`docs/SETUP.md`** — cómo arrancar la app en local.
-- **`docs/ROADMAP.md`** — qué falta para el MVP, en qué orden.

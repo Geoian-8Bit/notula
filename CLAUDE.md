@@ -9,7 +9,6 @@ Este archivo lo lee Claude Code automáticamente. Mantenlo corto. La sustancia v
 1. [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — stack, monorepo, data flow, auth, DB, devops, decisiones notables.
 2. [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md) — el patrón route → service → repository con código copiable. **Indispensable** antes de añadir cualquier feature.
 3. [`docs/SETUP.md`](docs/SETUP.md) — cómo arrancar la app en local (Postgres, `.env`, dev servers, reset de DB).
-4. [`docs/ROADMAP.md`](docs/ROADMAP.md) — qué está hecho, qué falta para el MVP, qué se ha pospuesto y por qué.
 
 ## Reglas no-negociables
 
@@ -51,4 +50,4 @@ Este archivo lo lee Claude Code automáticamente. Mantenlo corto. La sustancia v
 
 Hecho hasta hoy: bootstrap del monorepo, auth completa (sign-up + sign-in + sesión + endpoint protegido), refactor a route/service/repository con `books` como ejemplo canónico, cliente API tipado en frontend, tests reales con DB en CI.
 
-Siguiente paso natural según `docs/ROADMAP.md`: **escáner ISBN**.
+No hay roadmap fijo: el usuario decide qué feature toca según le apetezca. Espera a que te diga qué implementar.

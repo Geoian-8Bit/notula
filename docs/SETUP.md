@@ -227,4 +227,3 @@ Comprueba que el backend devuelve la cookie con `Secure=false` en dev. Mira la p
 
 - **`docs/ARCHITECTURE.md`** para entender por qué está montado así.
 - **`docs/CONVENTIONS.md`** antes de añadir features.
-- **`docs/ROADMAP.md`** para saber qué falta.
