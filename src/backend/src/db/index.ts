@@ -11,3 +11,7 @@ const queryClient = postgres(env.DATABASE_URL, {
 export const db = drizzle(queryClient, { schema, casing: 'snake_case' });
 export type Database = typeof db;
 export { schema };
+
+export async function closeDb() {
+  await queryClient.end({ timeout: 5 });
+}

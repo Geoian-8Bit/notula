@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { buildApp } from '../server.js';
+import { closeDb } from '../db/index.js';
 
 let app: FastifyInstance;
 
@@ -11,6 +12,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await app.close();
+  await closeDb();
 });
 
 function uniqueEmail() {

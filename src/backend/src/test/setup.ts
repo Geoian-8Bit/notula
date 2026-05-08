@@ -15,5 +15,12 @@ if (!process.env.DATABASE_URL) {
 const here = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(here, '../../drizzle/migrations');
 
-const { db } = await import('../db/index.js');
-await migrate(db, { migrationsFolder });
+export async function setup() {
+  const { db, closeDb } = await import('../db/index.js');
+  await migrate(db, { migrationsFolder });
+  await closeDb();
+}
+
+export async function teardown() {
+  // Worker processes own their own DB clients and close them via afterAll hooks.
+}
