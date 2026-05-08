@@ -9,4 +9,6 @@ paths = [
   '''\.env\.example$''',
   '''SECURITY\.md$''',
   '''README\.md$''',
+  '''src/backend/src/test/setup\.ts$''',
+  '''\.github/workflows/.*\.ya?ml$''',
 ]
