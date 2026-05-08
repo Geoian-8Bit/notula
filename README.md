@@ -48,3 +48,13 @@ npm run dev
 | `npm run db:generate` | Genera migraciones desde el schema Drizzle |
 | `npm run db:push`     | Aplica el schema directamente (desarrollo) |
 | `npm run db:studio`   | Drizzle Studio (UI de la DB)               |
+
+## Documentación
+
+Antes de tocar código:
+
+- [`CLAUDE.md`](CLAUDE.md) — guía corta para agentes (auto-loaded por Claude Code) con las reglas no-negociables y los comandos comunes.
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — stack, monorepo, ciclo de vida de una request, auth, DB, errores, decisiones notables.
+- [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md) — recetas paso a paso para añadir features siguiendo el patrón route → service → repository.
+- [`docs/SETUP.md`](docs/SETUP.md) — setup local detallado (Postgres real, PGlite, Docker), reset de DB, troubleshooting.
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) — qué está hecho, qué falta para el MVP, qué se ha pospuesto y por qué.
