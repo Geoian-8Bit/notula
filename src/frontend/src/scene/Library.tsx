@@ -93,7 +93,7 @@ export function Library() {
         }}
       >
         <Scene />
-        <AsymmetricFrustum extraBottom={0.15} />
+        <WorldFraming topY={2.5} bottomY={-0.2} distance={3.7} />
         <CameraRig targetYawRef={targetYaw} targetPitchRef={targetPitch} />
         <PostFX />
       </Canvas>
@@ -170,6 +170,49 @@ function clamp(v: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, v));
 }
 
+interface WorldFramingProps {
+  /** Coordenada world-Y que cae en el borde SUPERIOR del frame, a `distance`. */
+  topY: number;
+  /** Coordenada world-Y que cae en el borde INFERIOR del frame, a `distance`. */
+  bottomY: number;
+  /** Distancia (m) de la cámara al plano frontal de la estantería. */
+  distance: number;
+}
+
+/**
+ * Construye el projection matrix cada frame para que `topY`/`bottomY`
+ * (world Y, a la distancia `distance` desde la cámara) caigan SIEMPRE en
+ * los bordes vertical superior/inferior del frame, en cualquier
+ * dispositivo o aspecto. La extensión horizontal escala con el aspecto:
+ * pantallas anchas ven más pared lateral, pero techo y suelo visibles
+ * son idénticos.
+ *
+ * Sustituye al combo `ResponsiveFraming` + `AsymmetricFrustum`: lockear
+ * en world-space (en lugar de derivarlo del fov en grados) hace que dos
+ * móviles con aspecto casi-igual ya no produzcan distintos márgenes de
+ * suelo bajo la estantería.
+ */
+function WorldFraming({ topY, bottomY, distance }: WorldFramingProps) {
+  useFrame(({ camera, size }) => {
+    if (!(camera instanceof THREE.PerspectiveCamera)) return;
+    const aspect = size.width / size.height;
+    const near = camera.near;
+    const far = camera.far;
+    const camY = camera.position.y;
+    const topTan = (topY - camY) / distance;
+    const bottomTan = (bottomY - camY) / distance;
+    const top = near * topTan;
+    const bottom = near * bottomTan;
+    // Horizontal simétrico, escala con aspecto.
+    const halfV = (top - bottom) / 2;
+    const right = halfV * aspect;
+    const left = -right;
+    camera.projectionMatrix.makePerspective(left, right, top, bottom, near, far);
+    camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+  });
+  return null;
+}
+
 /**
  * Post-processing: SSAO añade sombras de contacto en las grietas
  * (libros↔balda, esquinas pared) y bloom suaviza highlights brillantes
@@ -194,31 +237,4 @@ function PostFX() {
       <Bloom intensity={0.35} luminanceThreshold={0.85} luminanceSmoothing={0.2} mipmapBlur />
     </EffectComposer>
   );
-}
-
-/**
- * Reescribe la matriz de proyección de la cámara cada frame para
- * extender SÓLO el borde inferior del frustum. Laterales y borde
- * superior se mantienen exactamente como con un PerspectiveCamera
- * simétrico al `fov` actual.
- *
- * `extraBottom` es la fracción extra que añadimos al `tan(fov/2)`
- * inferior. Ej: 0.30 ⇒ el campo de visión hacia abajo es 30 % mayor
- * que hacia arriba.
- */
-function AsymmetricFrustum({ extraBottom }: { extraBottom: number }) {
-  useFrame(({ camera, size }) => {
-    if (!(camera instanceof THREE.PerspectiveCamera)) return;
-    const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
-    const aspect = size.width / size.height;
-    const near = camera.near;
-    const far = camera.far;
-    const top = near * Math.tan(halfFov);
-    const bottom = -near * Math.tan(halfFov * (1 + extraBottom));
-    const right = top * aspect;
-    const left = -right;
-    camera.projectionMatrix.makePerspective(left, right, top, bottom, near, far);
-    camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
-  });
-  return null;
 }
