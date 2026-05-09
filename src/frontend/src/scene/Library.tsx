@@ -107,18 +107,28 @@ function Scene() {
       <color attach="background" args={[ROOM_PALETTE.background]} />
       <fog attach="fog" args={[ROOM_PALETTE.background, 9, 18]} />
 
-      {/* IBL: el HDRI da el "color de la luz" del entorno; los materiales
-          PBR lo samplean. background={false} para no pisar las paredes. */}
-      <Environment preset="apartment" background={false} environmentIntensity={0.6} />
+      {/* IBL: HDRI custom (Poly Haven sunny_vondelpark) en lugar del
+          preset built-in. background={false} para no pisar las paredes. */}
+      <Environment
+        files="/hdri/sunny_vondelpark.exr"
+        background={false}
+        environmentIntensity={0.4}
+      />
 
       {/* PCSS: sombras blandas con penumbra dependiente de distancia. */}
       <SoftShadows samples={16} size={25} focus={0.8} />
 
       <ambientLight color={ROOM_PALETTE.ambient} intensity={0.15} />
+      {/* Sol entrando por una ventana detrás-izquierda de la cámara.
+          La cámara está en z=-0.1 mirando hacia -Z (estantería al fondo);
+          la fuente se posiciona en (-X, +Y, +Z) — atrás-izquierda-arriba
+          — y el rayo viaja hacia el target (0,0,0) iluminando la
+          estantería de frente con un sesgo a la derecha (sombras a la
+          derecha). */}
       <directionalLight
-        color={ROOM_PALETTE.sun}
-        intensity={1.0}
-        position={[3, 4, 2]}
+        color="#FFD89A"
+        intensity={2.2}
+        position={[-5, 4, 5]}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-bias={-0.0005}
@@ -138,7 +148,7 @@ function Scene() {
       />
 
       <Room palette={ROOM_PALETTE} />
-      <Bookshelf palette={ROOM_PALETTE} />
+      <Bookshelf />
     </>
   );
 }

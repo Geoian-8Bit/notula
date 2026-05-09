@@ -1,74 +1,76 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { useGLTF } from '@react-three/drei';
+import * as THREE from 'three';
 import { ROOM } from './Room';
-import type { RoomPalette } from './palette';
-import { makeWalnutTexture, makeLightShelfTexture } from './textures';
 
 /**
- * Estantería vacía: sólo el armazón (laterales, base, encimera, fondo)
- * y 4 baldas interiores. Sin libros ni decoración.
+ * Estantería: modelo GLTF cargado de `public/models/bookshelf.glb`.
+ * Texturas PBR (albedo, normal, roughness, AO) van embebidas en el GLB.
+ *
+ * Auto-fit: tras cargar, se mide el bounding box del modelo y se escala
+ * para que `TARGET_HEIGHT` quede en metros del mundo, luego se reposiciona
+ * para apoyarse en el suelo (y=0), centrarse en X (x=0) y pegarse a la
+ * pared del fondo (z ≈ -ROOM.D/2). Esto hace que el modelo de origen
+ * pueda venir en cualquier escala/orientación de export.
  */
-const W = 1.0; // ancho útil interior — más fina, deja más pared a los lados
-const H = 2.0; // alto total
-const D = 0.28; // profundidad
-const T = 0.025; // grosor de los tableros — más finos
-const SHELVES = 4; // baldas interiores → 5 huecos
+const MODEL_URL = '/models/bookshelf.glb';
+useGLTF.preload(MODEL_URL);
 
-interface Props {
-  palette: RoomPalette;
-}
+const TARGET_HEIGHT = 2.0;
+const WIDTH_STRETCH = 1.21;
+const WALL_GAP = 0.08;
 
-export function Bookshelf({ palette }: Props) {
-  // Pared del fondo: z = -ROOM.D/2 = -4. Pegamos la trasera de la
-  // estantería a la pared dejando 1cm de aire.
-  const z = -ROOM.D / 2 + D / 2 + 0.01;
-  const totalW = W + T * 2;
+export function Bookshelf() {
+  const { scene } = useGLTF(MODEL_URL);
+  const groupRef = useRef<THREE.Group>(null);
 
-  // Posiciones Y de las baldas interiores (entre suelo y techo del mueble).
-  const inner: number[] = [];
-  for (let i = 1; i <= SHELVES; i++) {
-    inner.push(T + (i / (SHELVES + 1)) * (H - 2 * T));
-  }
+  // Clonamos para que el cache de useGLTF no se vea mutado entre re-mounts
+  // y configuramos sombras por mesh.
+  const cloned = useMemo(() => {
+    const c = scene.clone(true);
+    c.traverse((obj) => {
+      if (obj instanceof THREE.Mesh) {
+        obj.castShadow = true;
+        obj.receiveShadow = true;
+      }
+    });
+    return c;
+  }, [scene]);
 
-  // Una textura compartida por componente. La generación es lo caro;
-  // CanvasTexture en sí es ligero. Si en el futuro hay desmontaje
-  // (cambio de habitación) habrá que dispose() en useEffect cleanup.
-  const walnut = useMemo(() => makeWalnutTexture([1, 1]), []);
-  const shelfBoard = useMemo(() => makeLightShelfTexture([1, 1]), []);
+  useEffect(() => {
+    const group = groupRef.current;
+    if (!group) return;
+
+    // Reset antes de medir para que escalas/posiciones previas no
+    // contaminen el bounding box.
+    group.scale.setScalar(1);
+    group.position.set(0, 0, 0);
+
+    const box = new THREE.Box3().setFromObject(group);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+
+    const scale = TARGET_HEIGHT / size.y;
+    group.scale.set(scale * WIDTH_STRETCH, scale, scale);
+
+    // Volver a medir tras escalar.
+    box.setFromObject(group);
+    box.getSize(size);
+    box.getCenter(center);
+
+    const targetZ = -ROOM.D / 2 + size.z / 2 + WALL_GAP;
+    group.position.set(
+      -center.x, // centrar X
+      -box.min.y, // base sobre el suelo
+      targetZ - center.z, // cara trasera contra la pared del fondo
+    );
+  }, [cloned]);
 
   return (
-    <group position={[0, 0, z]}>
-      {/* Lateral izquierdo */}
-      <mesh position={[-W / 2 - T / 2, H / 2, 0]} castShadow receiveShadow>
-        <boxGeometry args={[T, H, D]} />
-        <meshStandardMaterial map={walnut} roughness={0.85} />
-      </mesh>
-      {/* Lateral derecho */}
-      <mesh position={[W / 2 + T / 2, H / 2, 0]} castShadow receiveShadow>
-        <boxGeometry args={[T, H, D]} />
-        <meshStandardMaterial map={walnut} roughness={0.85} />
-      </mesh>
-      {/* Encimera */}
-      <mesh position={[0, H - T / 2, 0]} castShadow receiveShadow>
-        <boxGeometry args={[totalW, T, D]} />
-        <meshStandardMaterial map={walnut} roughness={0.8} />
-      </mesh>
-      {/* Base */}
-      <mesh position={[0, T / 2, 0]} castShadow receiveShadow>
-        <boxGeometry args={[totalW, T, D]} />
-        <meshStandardMaterial map={walnut} roughness={0.85} />
-      </mesh>
-      {/* Trasera */}
-      <mesh position={[0, H / 2, -D / 2 + T / 4]} receiveShadow>
-        <boxGeometry args={[W, H - 2 * T, T / 2]} />
-        <meshStandardMaterial color={palette.shelfBack} roughness={0.95} />
-      </mesh>
-      {/* Baldas interiores */}
-      {inner.map((y, i) => (
-        <mesh key={i} position={[0, y, 0]} castShadow receiveShadow>
-          <boxGeometry args={[W, T, D]} />
-          <meshStandardMaterial map={shelfBoard} roughness={0.8} />
-        </mesh>
-      ))}
+    <group ref={groupRef}>
+      <primitive object={cloned} />
     </group>
   );
 }
