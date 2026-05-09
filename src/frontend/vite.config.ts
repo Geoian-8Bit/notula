@@ -15,6 +15,9 @@ export default defineConfig({
         theme_color: '#0f0f10',
         background_color: '#0f0f10',
         display: 'standalone',
+        // Forzar portrait cuando esté instalada como PWA. En navegador
+        // normal el SO ignora esto; ahí mostramos un overlay de "rota".
+        orientation: 'portrait',
         start_url: '/',
         icons: [],
       },
@@ -33,6 +36,9 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    // Aceptar cualquier host (Tailscale `100.x.x.x`, hostnames MagicDNS,
+    // etc.) además de localhost. Solo afecta al servidor de desarrollo.
+    allowedHosts: true,
     proxy: {
       '/api': { target: 'http://localhost:4000', changeOrigin: true },
     },

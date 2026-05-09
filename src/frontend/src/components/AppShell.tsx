@@ -16,6 +16,30 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
+      <PortraitOnlyOverlay />
+    </div>
+  );
+}
+
+/**
+ * Pantalla cubre-todo cuando un móvil/teléfono está en landscape. Solo
+ * activa en viewports estrechos (<= sm = 640px) y orientación landscape;
+ * en tablets y desktop nunca se ve. El SO solo respeta `orientation:
+ * portrait` del manifest cuando la app está instalada como PWA, así que
+ * en navegador normal este overlay es la red de seguridad.
+ */
+function PortraitOnlyOverlay() {
+  return (
+    <div
+      className="bg-page text-text-strong fixed inset-0 z-50 hidden flex-col items-center justify-center gap-4 p-8 text-center landscape:max-sm:flex"
+      role="dialog"
+      aria-live="polite"
+    >
+      <div className="text-5xl" aria-hidden>
+        ↻
+      </div>
+      <p className="font-display text-2xl">Rota tu dispositivo a vertical</p>
+      <p className="text-text-soft text-sm">Dream Library está pensada para usarse en portrait.</p>
     </div>
   );
 }
