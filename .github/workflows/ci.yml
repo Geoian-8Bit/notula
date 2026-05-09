@@ -65,7 +65,7 @@ jobs:
           context: .
           file: Dockerfile.backend
           push: false
-          tags: notula-backend:ci
+          tags: dream-library-backend:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -75,6 +75,6 @@ jobs:
           context: .
           file: Dockerfile.frontend
           push: false
-          tags: notula-frontend:ci
+          tags: dream-library-frontend:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max

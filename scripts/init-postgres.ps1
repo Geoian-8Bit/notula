@@ -41,4 +41,4 @@ try {
 }
 
 Write-Host ""
-Write-Host "Listo. Ya puedes apuntar Notula a postgres://notula:<pw>@localhost:5432/notula" -ForegroundColor Green
+Write-Host "Listo. Ya puedes apuntar Dream Library a postgres://notula:<pw>@localhost:5432/notula" -ForegroundColor Green

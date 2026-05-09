@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: notula-postgres
+    container_name: dream-library-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: notula
@@ -21,7 +21,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: notula-backend
+    container_name: dream-library-backend
     restart: unless-stopped
     depends_on:
       postgres:
@@ -41,7 +41,7 @@ services:
       dockerfile: Dockerfile.frontend
       args:
         VITE_API_URL: /api
-    container_name: notula-frontend
+    container_name: dream-library-frontend
     restart: unless-stopped
     depends_on:
       - backend

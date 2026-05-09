@@ -1,4 +1,4 @@
-# Notula
+# Dream Library
 
 Biblioteca virtual personal inmersiva. Los usuarios fotografían el código de barras de un libro físico, la app lo identifica vía Google Books / Open Library y lo añade a una biblioteca 3D donde pueden visualizarlo, abrirlo si tienen el archivo digital (PDF/EPUB) y consultar fechas de próximos tomos de la saga.
 
@@ -12,7 +12,7 @@ Biblioteca virtual personal inmersiva. Los usuarios fotografían el código de b
 ## Estructura
 
 ```
-notula/
+dream-library/
 ├── shared/         tipos zod compartidos cliente↔servidor
 ├── src/
 │   ├── frontend/   app web (Vite)

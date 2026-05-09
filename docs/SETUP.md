@@ -1,6 +1,6 @@
 # Setup local
 
-Cómo poner Notula a correr en tu máquina. Probado en Windows 11; lo equivalente en macOS/Linux es directo (sólo cambian los comandos de servicio Postgres).
+Cómo poner Dream Library a correr en tu máquina. Probado en Windows 11; lo equivalente en macOS/Linux es directo (sólo cambian los comandos de servicio Postgres).
 
 ## Prerequisitos
 
@@ -167,11 +167,11 @@ Frontend tests no necesitan DB.
 Si sólo quieres uno:
 
 ```bash
-npm test --workspace=@notula/backend
-npm test --workspace=@notula/frontend
+npm test --workspace=@dream-library/backend
+npm test --workspace=@dream-library/frontend
 ```
 
-> Los tests crean users de prueba (`test+<timestamp>@notula.test`) que se acumulan. Como van a `notula_test` y no a `notula`, no contaminan el dev DB. Si en algún momento quieres limpiar el test DB, igual que el dev: `DROP SCHEMA public CASCADE; ...` apuntando a `notula_test`.
+> Los tests crean users de prueba (`test+<timestamp>@dream-library.test`) que se acumulan. Como van a `notula_test` y no a `notula`, no contaminan el dev DB. Si en algún momento quieres limpiar el test DB, igual que el dev: `DROP SCHEMA public CASCADE; ...` apuntando a `notula_test`.
 
 > En CI no hay DB de tests separada — el servicio Postgres es efímero (se descarta al terminar el job), así que reutiliza la misma DB. Por eso el workflow no setea `DATABASE_URL_TEST`.
 
@@ -222,7 +222,7 @@ Comprueba que el backend devuelve la cookie con `Secure=false` en dev. Mira la p
 
 - **pgAdmin** o **DBeaver** para inspeccionar la DB en local (con el rol `notula_admin`).
 - **VS Code** con extensiones: ESLint, Prettier, Tailwind CSS IntelliSense.
-- **Drizzle Studio**: `npm run db:studio --workspace=@notula/backend` abre una UI web para los datos.
+- **Drizzle Studio**: `npm run db:studio --workspace=@dream-library/backend` abre una UI web para los datos.
 - **Postman / Bruno / HTTPie** para probar endpoints. Recuerda enviar la cookie de sesión (curl: `-b "<copiada del navegador>"`).
 
 ## Lecturas siguientes
