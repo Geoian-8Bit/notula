@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { ROOM } from './Room';
 import type { RoomPalette } from './palette';
+import { makeWalnutTexture, makeLightShelfTexture } from './textures';
 
 /**
  * Estantería vacía: sólo el armazón (laterales, base, encimera, fondo)
@@ -27,27 +29,33 @@ export function Bookshelf({ palette }: Props) {
     inner.push(T + (i / (SHELVES + 1)) * (H - 2 * T));
   }
 
+  // Una textura compartida por componente. La generación es lo caro;
+  // CanvasTexture en sí es ligero. Si en el futuro hay desmontaje
+  // (cambio de habitación) habrá que dispose() en useEffect cleanup.
+  const walnut = useMemo(() => makeWalnutTexture([1, 1]), []);
+  const shelfBoard = useMemo(() => makeLightShelfTexture([1, 1]), []);
+
   return (
     <group position={[0, 0, z]}>
       {/* Lateral izquierdo */}
       <mesh position={[-W / 2 - T / 2, H / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[T, H, D]} />
-        <meshStandardMaterial color={palette.shelfWood} roughness={0.85} />
+        <meshStandardMaterial map={walnut} roughness={0.85} />
       </mesh>
       {/* Lateral derecho */}
       <mesh position={[W / 2 + T / 2, H / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[T, H, D]} />
-        <meshStandardMaterial color={palette.shelfWood} roughness={0.85} />
+        <meshStandardMaterial map={walnut} roughness={0.85} />
       </mesh>
       {/* Encimera */}
       <mesh position={[0, H - T / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[totalW, T, D]} />
-        <meshStandardMaterial color={palette.shelfWood} roughness={0.8} />
+        <meshStandardMaterial map={walnut} roughness={0.8} />
       </mesh>
       {/* Base */}
       <mesh position={[0, T / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[totalW, T, D]} />
-        <meshStandardMaterial color={palette.shelfWood} roughness={0.85} />
+        <meshStandardMaterial map={walnut} roughness={0.85} />
       </mesh>
       {/* Trasera */}
       <mesh position={[0, H / 2, -D / 2 + T / 4]} receiveShadow>
@@ -58,7 +66,7 @@ export function Bookshelf({ palette }: Props) {
       {inner.map((y, i) => (
         <mesh key={i} position={[0, y, 0]} castShadow receiveShadow>
           <boxGeometry args={[W, T, D]} />
-          <meshStandardMaterial color={palette.shelfShelves} roughness={0.8} />
+          <meshStandardMaterial map={shelfBoard} roughness={0.8} />
         </mesh>
       ))}
     </group>

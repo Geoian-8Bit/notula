@@ -1,5 +1,8 @@
 import { useRef, type PointerEvent as ReactPointerEvent } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Environment, SoftShadows } from '@react-three/drei';
+import { EffectComposer, Bloom, SSAO } from '@react-three/postprocessing';
+import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import { ROOM_PALETTE } from './palette';
 import { Room } from './Room';
@@ -81,11 +84,18 @@ export function Library() {
         shadows
         dpr={[1, 2]}
         camera={{ position: [0, 1.2, -0.1], fov: 34 }}
-        gl={{ antialias: true, powerPreference: 'high-performance' }}
+        gl={{
+          antialias: true,
+          powerPreference: 'high-performance',
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.0,
+          outputColorSpace: THREE.SRGBColorSpace,
+        }}
       >
         <Scene />
         <AsymmetricFrustum extraBottom={0.15} />
         <CameraRig targetYawRef={targetYaw} targetPitchRef={targetPitch} />
+        <PostFX />
       </Canvas>
     </div>
   );
@@ -97,10 +107,17 @@ function Scene() {
       <color attach="background" args={[ROOM_PALETTE.background]} />
       <fog attach="fog" args={[ROOM_PALETTE.background, 9, 18]} />
 
-      <ambientLight color={ROOM_PALETTE.ambient} intensity={0.55} />
+      {/* IBL: el HDRI da el "color de la luz" del entorno; los materiales
+          PBR lo samplean. background={false} para no pisar las paredes. */}
+      <Environment preset="apartment" background={false} environmentIntensity={0.6} />
+
+      {/* PCSS: sombras blandas con penumbra dependiente de distancia. */}
+      <SoftShadows samples={16} size={25} focus={0.8} />
+
+      <ambientLight color={ROOM_PALETTE.ambient} intensity={0.15} />
       <directionalLight
         color={ROOM_PALETTE.sun}
-        intensity={1.4}
+        intensity={1.0}
         position={[3, 4, 2]}
         castShadow
         shadow-mapSize={[2048, 2048]}
@@ -114,7 +131,7 @@ function Scene() {
       />
       <pointLight
         color={ROOM_PALETTE.ambient}
-        intensity={0.35}
+        intensity={0.2}
         position={[1.6, 2.4, 1.6]}
         distance={7}
         decay={2}
@@ -151,6 +168,32 @@ function CameraRig({ targetYawRef, targetPitchRef }: CameraRigProps) {
 
 function clamp(v: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, v));
+}
+
+/**
+ * Post-processing: SSAO añade sombras de contacto en las grietas
+ * (libros↔balda, esquinas pared) y bloom suaviza highlights brillantes
+ * del HDRI / emisivos futuros (vela, lámpara). multisampling=0 desactiva
+ * MSAA: con SSAO no se puede usar y al lado tenemos antialias de la
+ * propia composición.
+ */
+function PostFX() {
+  return (
+    <EffectComposer multisampling={0}>
+      <SSAO
+        blendFunction={BlendFunction.MULTIPLY}
+        samples={20}
+        radius={0.06}
+        intensity={20}
+        luminanceInfluence={0.6}
+        worldDistanceThreshold={1}
+        worldDistanceFalloff={0.1}
+        worldProximityThreshold={0.6}
+        worldProximityFalloff={0.1}
+      />
+      <Bloom intensity={0.35} luminanceThreshold={0.85} luminanceSmoothing={0.2} mipmapBlur />
+    </EffectComposer>
+  );
 }
 
 /**

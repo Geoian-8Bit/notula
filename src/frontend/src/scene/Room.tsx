@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import type { RoomPalette } from './palette';
+import { makeOakFloorTexture } from './textures';
 
 /**
  * Habitación cerrada (suelo + techo + 4 paredes) sin decoración.
@@ -13,12 +15,16 @@ interface Props {
 }
 
 export function Room({ palette }: Props) {
+  // Suelo de roble con repeat alto: el suelo es 8×8 m, sin repetir la
+  // textura se ve como un solo tablón gigante.
+  const floorTex = useMemo(() => makeOakFloorTexture([4, 4]), []);
+
   return (
     <group>
       {/* Suelo */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[W, D]} />
-        <meshStandardMaterial color={palette.floor} roughness={0.95} />
+        <meshStandardMaterial map={floorTex} roughness={0.9} />
       </mesh>
       {/* Techo */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, H, 0]}>
