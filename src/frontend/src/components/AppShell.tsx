@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 
 /**
@@ -13,10 +14,20 @@ export function AppShell() {
     <div className="bg-page text-text-strong h-dvh w-dvw overflow-hidden">
       <div className="bg-surface/30 mx-auto flex h-full max-w-[440px] flex-col shadow-2xl sm:my-2 sm:h-[calc(100dvh-1rem)] sm:rounded-[40px] sm:ring-1 sm:ring-black/5">
         <main className="relative flex min-h-0 flex-1 flex-col overflow-hidden sm:rounded-[40px]">
-          <Outlet />
+          <Suspense fallback={<RouteFallback />}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
       <PortraitOnlyOverlay />
+    </div>
+  );
+}
+
+function RouteFallback() {
+  return (
+    <div className="text-text-soft flex h-full w-full items-center justify-center">
+      <span className="font-display animate-pulse text-lg">Abriendo la biblioteca…</span>
     </div>
   );
 }

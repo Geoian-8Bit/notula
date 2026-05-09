@@ -1,14 +1,20 @@
+import { lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { RequireAuth } from './auth/RequireAuth';
 import { ThemeProvider } from './theme/ThemeProvider';
 import { AppShell } from './components/AppShell';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
-import Shelf from './pages/Shelf';
-import AddBook from './pages/AddBook';
-import Favorites from './pages/Favorites';
-import Stats from './pages/Stats';
-import BookDetail from './pages/BookDetail';
+
+// Pages protegidas se code-splitean: la escena 3D arrastra three.js +
+// drei + postprocessing (~700 KB). Sign-in / sign-up no lo necesitan,
+// así que la primera pantalla carga instantánea. AppShell envuelve el
+// <Outlet> en un <Suspense> para mostrar fallback mientras llega el chunk.
+const Shelf = lazy(() => import('./pages/Shelf'));
+const AddBook = lazy(() => import('./pages/AddBook'));
+const Favorites = lazy(() => import('./pages/Favorites'));
+const Stats = lazy(() => import('./pages/Stats'));
+const BookDetail = lazy(() => import('./pages/BookDetail'));
 
 export default function App() {
   return (
