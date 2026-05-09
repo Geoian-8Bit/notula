@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { RequireAuth } from './auth/RequireAuth';
 import { ThemeProvider } from './theme/ThemeProvider';
@@ -15,6 +15,11 @@ const AddBook = lazy(() => import('./pages/AddBook'));
 const Favorites = lazy(() => import('./pages/Favorites'));
 const Stats = lazy(() => import('./pages/Stats'));
 const BookDetail = lazy(() => import('./pages/BookDetail'));
+const Credits = lazy(() => import('./pages/Credits'));
+// Sólo se monta la ruta en dev, pero el lazy import funciona igualmente
+// fuera de dev (no se referencia, así que no entra al bundle).
+const CalibrateShelf = lazy(() => import('./pages/CalibrateShelf'));
+const InspectBooks = lazy(() => import('./pages/InspectBooks'));
 
 export default function App() {
   return (
@@ -22,6 +27,34 @@ export default function App() {
       <Routes>
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route
+          path="/credits"
+          element={
+            <Suspense fallback={null}>
+              <Credits />
+            </Suspense>
+          }
+        />
+        {import.meta.env.DEV && (
+          <>
+            <Route
+              path="/dev/calibrate-shelf"
+              element={
+                <Suspense fallback={null}>
+                  <CalibrateShelf />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/dev/inspect-books"
+              element={
+                <Suspense fallback={null}>
+                  <InspectBooks />
+                </Suspense>
+              }
+            />
+          </>
+        )}
         <Route
           element={
             <RequireAuth>

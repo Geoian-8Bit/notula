@@ -92,8 +92,14 @@ export default function SignIn() {
         </p>
       </form>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex justify-center p-5">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-2 p-5">
         <ThemeSwitcher />
+        <Link
+          to="/credits"
+          className="text-text-soft hover:text-text-strong pointer-events-auto text-xs underline"
+        >
+          Créditos
+        </Link>
       </div>
     </main>
   );
